@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PixivModule } from './pixiv/pixiv.module';
 
 @Module({
   imports: [
@@ -15,7 +16,9 @@ import { AppService } from './app.service';
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
+      synchronize: true,
     }),
+    PixivModule,
   ],
   controllers: [AppController],
   providers: [AppService],
