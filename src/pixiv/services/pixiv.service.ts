@@ -1,19 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Pixiv } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePixivDTO } from '../dto/createPixiv.dto';
-import { Pixiv } from '../pixiv.entity';
-import { PixivMapper } from '../pixiv.mapper';
 
 @Injectable()
 export class PixivService {
-	constructor(
-		@InjectRepository(Pixiv)
-		private readonly pixivRepository: Repository<Pixiv>,
-	) {}
+	constructor(private readonly prismaService: PrismaService) {}
 
-	createPixiv(createPixivDTO: CreatePixivDTO): Promise<Pixiv> {
-		const pixiv = PixivMapper.toPixiv(createPixivDTO);
-		return this.pixivRepository.save(pixiv);
+	findPixiv(page: number, limit: number): Promise<Pixiv[]> {
+		const skip = page * limit;
+		return this.prismaService.pixiv.findMany({
+			skip,
+			take: limit,
+		});
+	}
+
+	createPixiv(createPixivDTO: CreatePixivDTO) {
+		const pixiv: Pixiv = {} as Pixiv;
+		return this.prismaService.pixiv.create({
+			data: pixiv,
+		});
 	}
 }

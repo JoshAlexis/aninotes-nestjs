@@ -1,20 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Pixiv } from '../pixiv.entity';
+import { PrismaService } from '../../prisma/prisma.service';
 import { PixivService } from './pixiv.service';
 
 describe('PixivService', () => {
 	let service: PixivService;
-	let pixivRepository: Repository<Pixiv>;
-	const PIXIV_REPOSITORY_TOKEN = getRepositoryToken(Pixiv);
+	let prismaService: PrismaService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				PixivService,
 				{
-					provide: PIXIV_REPOSITORY_TOKEN,
+					provide: PrismaService,
 					useValue: {
 						save: jest.fn(),
 					},
@@ -23,14 +20,14 @@ describe('PixivService', () => {
 		}).compile();
 
 		service = module.get<PixivService>(PixivService);
-		pixivRepository = module.get<Repository<Pixiv>>(PIXIV_REPOSITORY_TOKEN);
+		prismaService = module.get<PrismaService>(PrismaService);
 	});
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('pixivRepository sould be defined', () => {
-		expect(pixivRepository).toBeDefined();
+	it('Prisma service should be defined', () => {
+		expect(prismaService).toBeDefined();
 	});
 });
