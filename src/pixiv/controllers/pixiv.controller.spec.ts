@@ -33,6 +33,6 @@ describe('PixivController', () => {
 
 	it('should get a list of pixiv', async () => {
 		expect(await controller.findPixiv(1, 10)).not.toHaveLength(0);
-		expect(service.findPixiv).toHaveBeenCalledWith();
+		expect(service.findPixiv).toHaveBeenCalledWith(1, 10);
 	});
 });
