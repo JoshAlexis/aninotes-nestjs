@@ -19,7 +19,7 @@ export class PixivController {
 	@Get()
 	async findPixiv(
 		@Query('page', ParseIntPipe) page: number,
-		@Query('limiy', ParseIntPipe) limit: number,
+		@Query('limit', ParseIntPipe) limit: number,
 	): Promise<Pixiv[]> {
 		return await this.pixivService.findPixiv(page, limit);
 	}

@@ -22,7 +22,10 @@ describe('PixivController (e2e)', () => {
 	it('/api/v1/pixiv/ (GET)', async () => {
 		return await request(app.getHttpServer())
 			.get('/pixiv')
-			.expect(200)
-			.expect('Pixiv item');
+			.query({
+				page: 1,
+				limit: 10,
+			})
+			.expect(200);
 	});
 });

@@ -1,33 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import { Tag } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTagDto } from '../dto/createTag.dto';
+import { NameTagDto } from '../dto/nameTag.dto';
 import { TagsMapper } from '../tags.mapper';
 
 @Injectable()
 export class TagsService {
 	constructor(private readonly prismaService: PrismaService) {}
 
-	createTag(createTagDto: CreateTagDto): Promise<Tag> {
-		return this.prismaService.tag.create({
+	async createTag(createTagDto: CreateTagDto): Promise<Tag> {
+		const createdTag = await this.prismaService.tag.create({
 			data: TagsMapper.toTagPrisma(createTagDto),
 		});
+		return createdTag;
 	}
 
-	findOneById(id: number) {
-		const tag: CreateTagDto = {} as CreateTagDto;
+	async findAll(): Promise<Tag[]> {
+		const tags = await this.prismaService.tag.findMany();
+		return tags;
+	}
+
+	async findOneById(id: number): Promise<Tag> {
+		const tag = await this.prismaService.tag.findUnique({
+			where: {
+				id,
+			},
+		});
 		return tag;
 	}
 
-	findTagsByName(name: string) {
-		return '';
+	async findTagsByName(nameTagDto: NameTagDto) {
+		const tags = await this.prismaService.tag.findMany({
+			where: {
+				name: {
+					contains: nameTagDto.name,
+				},
+			},
+		});
+		return tags;
 	}
 
-	getTags(page: number, limit: number) {
-		return '';
+	async getTags(page: number, limit: number) {
+		const skip = (page - 1) * limit;
+		const tags = await this.prismaService.tag.findMany({
+			skip,
+			take: limit,
+		});
+		return tags;
 	}
 
-	updateTag(id: number, updateTagDto: CreateTagDto) {
-		return '';
+	async updateTag(id: number, updateTagDto: CreateTagDto) {
+		const tag = await this.prismaService.tag.update({
+			where: {
+				id,
+			},
+			data: TagsMapper.toTagPrisma(updateTagDto),
+		});
+		return tag;
 	}
 }
