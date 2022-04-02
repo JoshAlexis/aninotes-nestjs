@@ -35,6 +35,7 @@ export class TagsService {
 			where: {
 				name: {
 					contains: nameTagDto.name,
+					mode: 'insensitive',
 				},
 			},
 		});

@@ -60,7 +60,7 @@ describe('TagsController (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.get('/tags/name')
 				.send({
-					name: mockedTag.name,
+					name: 'impact',
 				});
 			expect(response.status).toBe(200);
 			expect(response.body).not.toHaveLength(0);
