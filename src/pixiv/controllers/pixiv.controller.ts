@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { CreatePixivDTO } from '../dto/createPixiv.dto';
 import { PixivService } from '../services/pixiv.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Pixiv')
 @Controller('pixiv')
 export class PixivController {
 	constructor(private readonly pixivService: PixivService) {}

@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -21,6 +22,20 @@ async function bootstrap() {
 			},
 		}),
 	);
+
+	const config = new DocumentBuilder()
+		.setTitle('Aninotes')
+		.setDescription('Aninotes API')
+		.setVersion('1.0')
+		.addTag('Tags')
+		.addTag('Pixiv')
+		.addTag('Illustrators')
+		.addTag('Sauces')
+		.build();
+
+	const document = SwaggerModule.createDocument(app, config);
+	SwaggerModule.setup('docs', app, document);
+
 	await app.listen(3000);
 }
 bootstrap();
