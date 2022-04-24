@@ -2,23 +2,98 @@ import { Injectable } from '@nestjs/common';
 import { Pixiv } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePixivDTO } from '../dto/createPixiv.dto';
+import { PixivMapper } from '../pixiv.mapper';
+
+type TagItem = {
+	id: number;
+	name: string;
+};
+
+type TagsList = {
+	tags: {
+		tag: TagItem;
+	}[];
+};
 
 @Injectable()
 export class PixivService {
 	constructor(private readonly prismaService: PrismaService) {}
 
-	findPixiv(page: number, limit: number): Promise<Pixiv[]> {
-		const skip = page * limit;
-		return this.prismaService.pixiv.findMany({
+	async findPixiv(page: number, limit: number) {
+		const skip = (page - 1) * limit;
+		const pixivList = await this.prismaService.pixiv.findMany({
 			skip,
 			take: limit,
+			select: {
+				id: true,
+				idPixiv: true,
+				favorite: true,
+				pixivName: true,
+				link: true,
+				quality: true,
+				tags: {
+					select: {
+						tag: {
+							select: {
+								id: true,
+								name: true,
+							},
+						},
+					},
+				},
+			},
+			// include: {
+			// 	tags: {
+			// 		select: {
+			// 			tag: {
+			// 				select: {
+			// 					id: true,
+			// 					name: true,
+			// 				},
+			// 			},
+			// 		},
+			// 	},
+			// },
 		});
+		return pixivList;
 	}
 
-	createPixiv(createPixivDTO: CreatePixivDTO) {
-		const pixiv: Pixiv = {} as Pixiv;
-		return this.prismaService.pixiv.create({
-			data: pixiv,
+	async createPixiv(createPixivDTO: CreatePixivDTO) {
+		const createdPixiv = await this.prismaService.pixiv.create({
+			data: {
+				...PixivMapper.toPixivPrisma(createPixivDTO),
+				tags: {
+					create: PixivMapper.toConnectTags(createPixivDTO).map((idTag) => ({
+						tag: {
+							connect: {
+								id: idTag.id,
+							},
+						},
+					})) as any,
+				},
+			},
 		});
+		return createdPixiv;
+	}
+
+	async getByIdPixiv(idPixiv: number): Promise<Pixiv & TagsList> {
+		const pixiv = await this.prismaService.pixiv.findFirst({
+			where: {
+				idPixiv,
+			},
+			include: {
+				tags: {
+					select: {
+						tag: {
+							select: {
+								id: true,
+								name: true,
+							},
+						},
+					},
+				},
+			},
+		});
+		return pixiv;
 	}
 }

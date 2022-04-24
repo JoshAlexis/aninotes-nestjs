@@ -17,6 +17,7 @@ describe('TagsController (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		prisma = moduleFixture.get(PrismaService);
+		await prisma.pixivTag.deleteMany();
 		await prisma.tag.deleteMany();
 	});
 
