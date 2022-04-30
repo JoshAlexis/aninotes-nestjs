@@ -7,11 +7,15 @@ import {
 	Param,
 	ParseIntPipe,
 	Post,
+	Put,
 	Query,
 } from '@nestjs/common';
 import { CreatePixivDTO } from '../dto/createPixiv.dto';
 import { PixivService } from '../services/pixiv.service';
 import { ApiTags } from '@nestjs/swagger';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { ResponseUpdatedPixivDto } from '../dto/responseUpdatedPixiv.dto';
+import { UpdatePixivDto } from '../dto/updatePixiv.dto';
 
 @ApiTags('Pixiv')
 @Controller({
@@ -21,7 +25,6 @@ import { ApiTags } from '@nestjs/swagger';
 export class PixivController {
 	constructor(private readonly pixivService: PixivService) {}
 
-	//@Serialize(ResponsePixivDto)
 	@Post('/create')
 	@HttpCode(HttpStatus.CREATED)
 	create(@Body() createPixivDTO: CreatePixivDTO) {
@@ -33,6 +36,15 @@ export class PixivController {
 		return this.pixivService.getByIdPixiv(idPixiv);
 	}
 
+	@Serialize(ResponseUpdatedPixivDto)
+	@Put('/update/:id')
+	updatePixiv(
+		@Body() updatePixivDto: UpdatePixivDto,
+		@Param('id', ParseIntPipe) id: number,
+	) {
+		return this.pixivService.updatePixiv(id, updatePixivDto);
+	}
+
 	@Get()
 	findPixiv(
 		@Query('page', ParseIntPipe) page: number,
@@ -41,7 +53,6 @@ export class PixivController {
 		return this.pixivService.findPixiv(page, limit);
 	}
 
-	// @Serialize(ResponsePixivDto)
 	@Get('/:id')
 	getPixivByPK(@Param('id', ParseIntPipe) id: number) {
 		return this.pixivService.getById(id);

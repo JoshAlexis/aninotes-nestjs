@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Pixiv } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePixivDTO } from '../dto/createPixiv.dto';
+import { UpdatePixivDto } from '../dto/updatePixiv.dto';
 import { PixivMapper } from '../pixiv.mapper';
 
 type TagItem = {
@@ -57,18 +58,6 @@ export class PixivService {
 					},
 				},
 			},
-			// include: {
-			// 	tags: {
-			// 		select: {
-			// 			tag: {
-			// 				select: {
-			// 					id: true,
-			// 					name: true,
-			// 				},
-			// 			},
-			// 		},
-			// 	},
-			// },
 		});
 		return pixivList;
 	}
@@ -132,5 +121,16 @@ export class PixivService {
 		});
 
 		return pixiv;
+	}
+
+	async updatePixiv(id: number, updatePixivDto: UpdatePixivDto) {
+		const updatedPixiv = await this.prismaService.pixiv.update({
+			data: updatePixivDto,
+			where: {
+				id,
+			},
+		});
+
+		return updatedPixiv;
 	}
 }

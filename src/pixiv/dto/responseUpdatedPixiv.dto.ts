@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class ResponsePixivDto {
+export class ResponseUpdatedPixivDto {
 	@Expose()
 	id: number;
 
@@ -18,7 +18,4 @@ export class ResponsePixivDto {
 
 	@Expose()
 	quality: number;
-
-	@Expose()
-	createdAt: string;
 }
