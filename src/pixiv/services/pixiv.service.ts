@@ -15,11 +15,26 @@ type TagsList = {
 	}[];
 };
 
+type PixiItem = {
+	id: number;
+	idPixiv: number;
+	favorite: number;
+	pixivName: string;
+	link: string;
+	quality: number;
+	tags: {
+		tag: {
+			id: number;
+			name: string;
+		};
+	}[];
+};
+
 @Injectable()
 export class PixivService {
 	constructor(private readonly prismaService: PrismaService) {}
 
-	async findPixiv(page: number, limit: number) {
+	async findPixiv(page: number, limit: number): Promise<PixiItem[]> {
 		const skip = (page - 1) * limit;
 		const pixivList = await this.prismaService.pixiv.findMany({
 			skip,
@@ -94,6 +109,28 @@ export class PixivService {
 				},
 			},
 		});
+		return pixiv;
+	}
+
+	async getById(id: number): Promise<Pixiv & TagsList> {
+		const pixiv = await this.prismaService.pixiv.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				tags: {
+					select: {
+						tag: {
+							select: {
+								id: true,
+								name: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
 		return pixiv;
 	}
 }
