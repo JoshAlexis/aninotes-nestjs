@@ -12,7 +12,7 @@ datasource db {
 
 model Pixiv {
   id Int @id @default(autoincrement())
-  idPixiv Int
+  idPixiv Int @unique
   pixivName String? @default("In Japanese")
   link String
   favorite Int // 1 least favorite - 3 most favorite

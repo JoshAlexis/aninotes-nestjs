@@ -2,21 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { Pixiv } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePixivDTO } from '../dto/createPixiv.dto';
+import { TagItem } from '../dto/pixiv.dto';
 import { UpdatePixivDto } from '../dto/updatePixiv.dto';
 import { PixivMapper } from '../pixiv.mapper';
 
-type TagItem = {
-	id: number;
-	name: string;
-};
-
-type TagsList = {
+export type TagsList = {
 	tags: {
 		tag: TagItem;
 	}[];
 };
 
-type PixiItem = {
+export interface PixivItem {
 	id: number;
 	idPixiv: number;
 	favorite: number;
@@ -29,13 +25,13 @@ type PixiItem = {
 			name: string;
 		};
 	}[];
-};
+}
 
 @Injectable()
 export class PixivService {
 	constructor(private readonly prismaService: PrismaService) {}
 
-	async findPixiv(page: number, limit: number): Promise<PixiItem[]> {
+	async findPixiv(page: number, limit: number): Promise<PixivItem[]> {
 		const skip = (page - 1) * limit;
 		const pixivList = await this.prismaService.pixiv.findMany({
 			skip,
@@ -62,7 +58,7 @@ export class PixivService {
 		return pixivList;
 	}
 
-	async createPixiv(createPixivDTO: CreatePixivDTO) {
+	async createPixiv(createPixivDTO: CreatePixivDTO): Promise<Pixiv> {
 		const createdPixiv = await this.prismaService.pixiv.create({
 			data: {
 				...PixivMapper.toPixivPrisma(createPixivDTO),
@@ -119,7 +115,6 @@ export class PixivService {
 				},
 			},
 		});
-
 		return pixiv;
 	}
 

@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class ResponseUpdatedPixivDto {
+export class PixivUpdatedDto {
 	@Expose()
 	id: number;
 
