@@ -1,13 +1,6 @@
-import {
-	IsOptional,
-	IsNotEmpty,
-	IsArray,
-	ArrayNotEmpty,
-	IsNumber,
-	IsString,
-} from 'class-validator';
+import { IsOptional, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreatePixivDTO {
+export class UpdatePixivDto {
 	@IsNotEmpty()
 	@IsNumber()
 	idPixiv: number;
@@ -28,10 +21,4 @@ export class CreatePixivDTO {
 	@IsNotEmpty()
 	@IsString()
 	link: string;
-
-	@IsNotEmpty()
-	@IsArray()
-	@ArrayNotEmpty()
-	@IsNumber({}, { each: true })
-	tags: number[];
 }

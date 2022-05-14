@@ -3,7 +3,7 @@ import { Response } from 'express';
 
 @Injectable()
 export class AppService {
-  getHello(@Res() response: Response) {
-    return response.json({ message: 'Aninotes API' });
-  }
+	getHello(@Res() response: Response) {
+		return response.json({ message: 'Aninotes API' });
+	}
 }
