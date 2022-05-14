@@ -48,6 +48,7 @@ describe('PixivController (e2e)', () => {
 			const idTag = responseTag.body.id;
 
 			mockedPixiv.tags = [idTag];
+			console.log(mockedPixiv);
 			const responsePixiv = await request(app.getHttpServer())
 				.post('/pixiv/create')
 				.send(mockedPixiv);

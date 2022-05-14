@@ -38,7 +38,7 @@ model PixivTag {
   pixivId Int
   tag Tag @relation(fields: [tagId], references: [id])
   tagId Int
-  @@id([pixivId, tagId])
+  id Int @id @default(autoincrement())
 
 	@@map("pixivTags")
 }

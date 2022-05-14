@@ -16,7 +16,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { UpdatePixivDto } from '../dto/updatePixiv.dto';
 import { PixivMapper } from '../pixiv.mapper';
-import { PixivUpdatedDto } from '../dto/pixivUpdated.dto';
+import { PixivUpdatedResponseDto } from '../dto/pixivUpdatedResponse.dto';
+import { UpdatePixivTagDto } from '../dto/updatePixivTag.dto';
 
 @ApiTags('Pixiv')
 @Controller({
@@ -38,13 +39,21 @@ export class PixivController {
 		return PixivMapper.toPixivDto(pixiv);
 	}
 
-	@Serialize(PixivUpdatedDto)
+	@Serialize(PixivUpdatedResponseDto)
 	@Put('/update/:id')
 	updatePixiv(
 		@Body() updatePixivDto: UpdatePixivDto,
 		@Param('id', ParseIntPipe) id: number,
 	) {
 		return this.pixivService.updatePixiv(id, updatePixivDto);
+	}
+
+	@Put('/update/tags/:id')
+	updatePixivTag(
+		@Body() updatePixivTagDto: UpdatePixivTagDto,
+		@Param('id', ParseIntPipe) id: number,
+	) {
+		return this.pixivService.updatePixivTag(id, updatePixivTagDto);
 	}
 
 	@Get()

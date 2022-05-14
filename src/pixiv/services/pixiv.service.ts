@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Pixiv } from '@prisma/client';
+import { Pixiv, PixivTag } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePixivDTO } from '../dto/createPixiv.dto';
 import { TagItem } from '../dto/pixiv.dto';
 import { UpdatePixivDto } from '../dto/updatePixiv.dto';
+import { UpdatePixivTagDto } from '../dto/updatePixivTag.dto';
 import { PixivMapper } from '../pixiv.mapper';
 
 export type TagsList = {
 	tags: {
+		id: number;
 		tag: TagItem;
 	}[];
 };
@@ -45,6 +47,7 @@ export class PixivService {
 				quality: true,
 				tags: {
 					select: {
+						id: true,
 						tag: {
 							select: {
 								id: true,
@@ -84,6 +87,7 @@ export class PixivService {
 			include: {
 				tags: {
 					select: {
+						id: true,
 						tag: {
 							select: {
 								id: true,
@@ -105,6 +109,7 @@ export class PixivService {
 			include: {
 				tags: {
 					select: {
+						id: true,
 						tag: {
 							select: {
 								id: true,
@@ -127,5 +132,27 @@ export class PixivService {
 		});
 
 		return updatedPixiv;
+	}
+
+	async updatePixivTag(
+		pixivId: number,
+		updatePixivTagDto: UpdatePixivTagDto,
+	): Promise<PixivTag> {
+		if (updatePixivTagDto.action === 'add') {
+			const updatedTag = await this.prismaService.pixivTag.create({
+				data: {
+					pixivId,
+					tagId: updatePixivTagDto.tagId,
+				},
+			});
+			return updatedTag;
+		} else if (updatePixivTagDto.action === 'remove') {
+			const updatedTag = await this.prismaService.pixivTag.delete({
+				where: {
+					id: updatePixivTagDto.pixivTagId,
+				},
+			});
+			return updatedTag;
+		}
 	}
 }

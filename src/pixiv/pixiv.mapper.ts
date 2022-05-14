@@ -1,7 +1,7 @@
 import { Pixiv } from '@prisma/client';
-import { flatArrayObj } from '../flatObject.util';
+import { flatArrayObj } from '../utils/flatObject.util';
 import { CreatePixivDTO } from './dto/createPixiv.dto';
-import { PixivDto, TagItem } from './dto/pixiv.dto';
+import { PixivDto, TagItemResponse } from './dto/pixiv.dto';
 import { PixivItem, TagsList } from './services/pixiv.service';
 
 type TagId = {
@@ -29,14 +29,15 @@ export class PixivMapper {
 	static toPixivDto(pixiv: Pixiv & TagsList) {
 		let responsePixiv: PixivDto = {} as PixivDto;
 
-		const flattenTags = flatArrayObj(pixiv.tags);
+		const flattenTags = flatArrayObj(pixiv?.tags ?? []);
 
-		const responseTags: TagItem[] = [];
+		const responseTags: TagItemResponse[] = [];
 
 		for (const tag of flattenTags) {
-			const tagItem: TagItem = {} as TagItem;
+			const tagItem: TagItemResponse = {} as TagItemResponse;
 
-			tagItem.id = tag['tag.id'];
+			tagItem.idPixivTag = tag['id'];
+			tagItem.idTag = tag['tag.id'];
 			tagItem.name = tag['tag.name'];
 
 			responseTags.push(tagItem);
@@ -57,12 +58,13 @@ export class PixivMapper {
 			let pixivDto: PixivDto = {} as PixivDto;
 
 			const flattedTags = flatArrayObj(pixivItem.tags);
-			const responseTags: TagItem[] = [];
+			const responseTags: TagItemResponse[] = [];
 
 			for (const tag of flattedTags) {
-				const tagItem: TagItem = {} as TagItem;
+				const tagItem: TagItemResponse = {} as TagItemResponse;
 
-				tagItem.id = tag['tag.id'];
+				tagItem.idPixivTag = tag['id'];
+				tagItem.idTag = tag['tag.id'];
 				tagItem.name = tag['tag.name'];
 
 				responseTags.push(tagItem);

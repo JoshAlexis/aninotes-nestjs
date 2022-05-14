@@ -3,6 +3,12 @@ export type TagItem = {
 	name: string;
 };
 
+export interface TagItemResponse {
+	idPixivTag: number;
+	idTag: number;
+	name: string;
+}
+
 export class PixivDto {
 	id: number;
 	idPixiv: number;
@@ -10,5 +16,5 @@ export class PixivDto {
 	pixivName: string;
 	link: string;
 	quality: number;
-	tags: TagItem[];
+	tags: TagItemResponse[];
 }
