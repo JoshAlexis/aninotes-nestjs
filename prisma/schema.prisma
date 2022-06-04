@@ -11,34 +11,67 @@ datasource db {
 }
 
 model Pixiv {
-  id Int @id @default(autoincrement())
-  idPixiv Int @unique
-  pixivName String? @default("In Japanese")
-  link String
-  favorite Int // 1 least favorite - 3 most favorite
-  quality Int // 1 the lowest - 4 the highest
-  tags PixivTag[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int        @id @default(autoincrement())
+  idPixiv   Int        @unique
+  pixivName String?    @default("In Japanese")
+  link      String
+  favorite  Int // 1 least favorite - 3 most favorite
+  quality   Int // 1 the lowest - 4 the highest
+  tags      PixivTag[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
   @@map("pixiv")
 }
 
-model Tag {
-  id Int @id @default(autoincrement())
-  name String
-  pixiv PixivTag[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Artist {
+  id        Int         @id @default(autoincrement())
+  name      String
+  origin    Origin?
+  tags      ArtistTag[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
-	@@map("tags")
+  @@map("artist")
 }
 
-model PixivTag {
-  pixiv Pixiv @relation(fields: [pixivId], references: [id])
-  pixivId Int
-  tag Tag @relation(fields: [tagId], references: [id])
-  tagId Int
-  id Int @id @default(autoincrement())
+model Tag {
+  id        Int         @id @default(autoincrement())
+  name      String
+  pixiv     PixivTag[]
+  artists   ArtistTag[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
-	@@map("pixivTags")
+  @@map("tags")
+}
+
+model Origin {
+  id       Int    @id @default(autoincrement())
+  artist   Artist? @relation(fields: [artistId], references: [id])
+  artistId Int?    @unique
+  name     String
+
+  @@map("origins")
+}
+
+// Many to Many Relations
+model PixivTag {
+  id      Int   @id @default(autoincrement())
+  pixiv   Pixiv @relation(fields: [pixivId], references: [id])
+  pixivId Int
+  tag     Tag   @relation(fields: [tagId], references: [id])
+  tagId   Int
+
+  @@map("pixivTags")
+}
+
+model ArtistTag {
+  id       Int    @id @default(autoincrement())
+  artist   Artist @relation(fields: [artistId], references: [id])
+  artistId Int
+  tag      Tag    @relation(fields: [tagId], references: [id])
+  tagId    Int
+
+  @@map("artistTags")
 }
