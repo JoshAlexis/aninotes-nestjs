@@ -6,7 +6,4 @@ export class UpdatedArtistResponseDto {
 
 	@Expose()
 	name: string;
-
-	@Expose()
-	origin: string;
 }

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Artist } from '@prisma/client';
+import { Artist, ArtistTag } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ArtistsMapper } from '../artists.mapper';
 import { CreateArtistDto } from '../dto/createArtist.dto';
 import { UpdateArtistDto } from '../dto/updateArtist.dto';
+import { UpdateArtistTagDto } from '../dto/updateArtistTag.dto';
 
 @Injectable()
 export class ArtistsService {
@@ -14,7 +15,12 @@ export class ArtistsService {
 			data: {
 				...ArtistsMapper.toArtistPrisma(data),
 				tags: {
-					connect: ArtistsMapper.mapIdToTagsIdList(data.tags) as any[],
+					create: ArtistsMapper.mapIdToTagsIdList(data.tags) as any[],
+				},
+				origin: {
+					connect: {
+						id: data.origin,
+					},
 				},
 			},
 		});
@@ -23,13 +29,77 @@ export class ArtistsService {
 	}
 
 	async updateArtis(id: number, data: UpdateArtistDto): Promise<Artist> {
-		const updatedArtist = await this.prismasService.artist.update({
-			data,
+		const updateArtist = this.prismasService.artist.update({
+			data: {
+				name: data.name,
+			},
 			where: {
 				id,
 			},
 		});
 
-		return updatedArtist;
+		const disconnectOrigin = this.prismasService.artist.update({
+			data: {
+				origin: {
+					disconnect: true,
+				},
+			},
+			where: {
+				id,
+			},
+		});
+
+		const connectNewOrigin = this.prismasService.artist.update({
+			data: {
+				origin: {
+					connect: {
+						id: data.origin,
+					},
+				},
+			},
+			where: {
+				id,
+			},
+		});
+
+		const [artists, disconnect, connect] =
+			await this.prismasService.$transaction([
+				updateArtist,
+				disconnectOrigin,
+				connectNewOrigin,
+			]);
+
+		return artists;
+	}
+
+	async fetchAll(): Promise<Artist[]> {
+		const artists = await this.prismasService.artist.findMany({
+			include: {
+				origin: true,
+				tags: true,
+			},
+		});
+		return artists;
+	}
+
+	async updateTags(id: number, data: UpdateArtistTagDto): Promise<ArtistTag> {
+		if (data.action === 'add') {
+			const newTag = await this.prismasService.artistTag.create({
+				data: {
+					artistId: id,
+					tagId: data.tagId,
+				},
+			});
+
+			return newTag;
+		}
+
+		const deletedTag = await this.prismasService.artistTag.delete({
+			where: {
+				id: data.artistTagId,
+			},
+		});
+
+		return deletedTag;
 	}
 }

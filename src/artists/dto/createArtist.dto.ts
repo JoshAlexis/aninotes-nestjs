@@ -12,8 +12,8 @@ export class CreateArtistDto {
 	name: string;
 
 	@IsNotEmpty()
-	@IsString()
-	origin: string;
+	@IsNumber()
+	origin: number;
 
 	@IsNotEmpty()
 	@IsArray()

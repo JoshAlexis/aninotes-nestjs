@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class UpdateArtistDto {
 	@IsNotEmpty()
@@ -6,6 +6,6 @@ export class UpdateArtistDto {
 	name: string;
 
 	@IsNotEmpty()
-	@IsString()
-	origin: string;
+	@IsNumber()
+	origin: number;
 }
